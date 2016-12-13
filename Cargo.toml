@@ -1,0 +1,9 @@
+[package]
+name = "rusty-records"
+version = "0.1.0"
+authors = ["itsdalmo <kristian@doingit.no>"]
+
+[dependencies]
+regex         = "0.1.80"
+csv           = "0.14.7"
+clap          = "2.19.0"
