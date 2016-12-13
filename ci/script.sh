@@ -30,7 +30,8 @@ run_test_suite() {
     cargo test --target $TARGET
 
     # sanity check the file type
-    file target/$TARGET/debug/rusty-records
+    file target/$TARGET/debug/mapper
+    file target/$TARGET/debug/reducer
 }
 
 main() {
