@@ -13,7 +13,11 @@ cat ./examples/data/sample.txt |\
 
 ```bash
 cat ./examples/data/sample.txt |\
-    ./target/release/mapper |\
-    ./target/release/reducer
+    ./target/release/mapper
+```
+
+```bash
+yes | ./target/release/mapper | pv > /dev/null
+yes | ./target/release/reducer  | pv > /dev/null
 ```
 

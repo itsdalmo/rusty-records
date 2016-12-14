@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+#[macro_use]
+extern crate lazy_static;
 extern crate csv;
 extern crate regex;
 pub mod error;
@@ -78,8 +80,10 @@ fn test_clean_field() {
 
 /// Remove quotes from a field in a record (" and ').
 fn remove_quotes(s: &str) -> Result<String> {
-    let re = try!(Regex::new("[\"']+"));
-    Ok(re.replace_all(s, ""))
+    lazy_static! {
+        static ref RE: Regex = Regex::new("[\"']+").unwrap();
+    }
+    Ok(RE.replace_all(s, ""))
 }
 
 #[test]
@@ -90,8 +94,10 @@ fn test_remove_quotes() {
 
 /// Replaces one or more linebreaks in a field with a single space.
 fn replace_linebreaks(s: &str) -> Result<String> {
-    let re = try!(Regex::new("[\n\r]+"));
-    Ok(re.replace_all(s, " "))
+    lazy_static! {
+        static ref RE: Regex = Regex::new("[\n\r]+").unwrap();
+    }
+    Ok(RE.replace_all(s, " "))
 }
 
 #[test]
@@ -102,8 +108,10 @@ fn test_replace_linebreaks() {
 
 /// Removes trailing whitespace (including linebreaks and tabs) for a field.
 fn trim_right(s: &str) -> Result<String> {
-    let re = try!(Regex::new("[:space:]+$"));
-    Ok(re.replace_all(s, ""))
+    lazy_static! {
+        static ref RE: Regex = Regex::new("[:space:]+$").unwrap();
+    }
+    Ok(RE.replace_all(s, ""))
 }
 
 #[test]
