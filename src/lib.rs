@@ -31,14 +31,24 @@ fn test_stringify() {
 }
 
 /// Handle a line. Reads as CSV and cleans up individual fields.
-pub fn handle_line(s: &str) -> Result<Vec<Vec<String>>> {
-    let csv = try!(read_line(s));
-    let mut res = vec![];
-    for record in csv {
-        let record = record.iter().map(|field| clean_field(&field).unwrap_or("".to_string())).collect();
-        res.push(record);
+pub fn handle_line(s: &str) -> csv::Writer<Vec<u8>> {
+    let mut csv = csv::Reader::from_string(s).has_headers(false).delimiter(b'|').flexible(true);
+    let mut out = csv::Writer::from_memory().delimiter(b'|');
+    let mut rec: Vec<String> = vec![];
+    loop {
+        match csv.next_str() {
+            csv::NextField::Data(v) => {
+                rec.push(clean_field(v).unwrap_or("".to_string()));
+            },
+            csv::NextField::EndOfRecord => {
+                out.write(rec.clone().into_iter());
+                rec.clear();
+            },
+            csv::NextField::EndOfCsv => break,
+            csv::NextField::Error(_) => {},
+        }
     }
-    Ok(res)
+    out
 }
 
 #[test]
