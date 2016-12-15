@@ -11,7 +11,7 @@ use std::result;
 pub type Result<T> = result::Result<T, error::Error>;
 
 /// Stringify records.
-pub fn stringify(v: Vec<Vec<String>>) -> csv::Writer<Vec<u8>> {
+pub fn stringify(v: &Vec<Vec<String>>) -> csv::Writer<Vec<u8>> {
     let mut csv = csv::Writer::from_memory().delimiter(b'|');
     for record in v.into_iter() {
         match csv.write(record.into_iter()) {
@@ -20,6 +20,14 @@ pub fn stringify(v: Vec<Vec<String>>) -> csv::Writer<Vec<u8>> {
         }
     }
     csv
+}
+
+#[test]
+fn test_stringify() {
+    let v = vec!["1316", "NY21", "ET LITE SÆLSKAP I ÅL", "429", "", "2000-01-01T00:00:00+00:00", "9999-12-31T00:00:00+00:00"];
+    let v = vec![v.iter().map(|s| s.to_string()).collect()];
+    let r = "1316|NY21|ET LITE SÆLSKAP I ÅL|429||2000-01-01T00:00:00+00:00|9999-12-31T00:00:00+00:00\n";
+    assert_eq!(stringify(&v).as_string(), r);
 }
 
 /// Handle a line. Reads as CSV and cleans up individual fields.
@@ -65,11 +73,11 @@ fn test_read_line() {
 }
 
 /// Cleans a single field of quotes, linebreaks and trailing whitespace.
-fn clean_field(s: &str) -> Result<String> {
-    let f = try!(remove_quotes(s));
-    let f = try!(replace_linebreaks(&f));
-    let f = try!(trim_right(&f));
-    Ok(f)
+pub fn clean_field(s: &str) -> Result<String> {
+    let s = try!(remove_quotes(&s));
+    let s = try!(replace_linebreaks(&s));
+    let s = try!(trim_right(&s));
+    Ok(s)
 }
 
 #[test]
