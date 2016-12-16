@@ -1,6 +1,6 @@
 [package]
 name = "rusty-records"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["itsdalmo <kristian@doingit.no>"]
 
 [[bin]]
