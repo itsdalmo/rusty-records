@@ -22,8 +22,8 @@ pub fn pass(r: &mut csv::Reader<std::io::Stdin>, w: &mut csv::Writer<std::io::St
 pub fn handle_lines(r: &mut csv::Reader<std::io::Stdin>, w: &mut csv::Writer<std::io::Stdout>) {
     for record in r.records() {
         let rec = record.unwrap();
-        let rec: Vec<String> = rec.iter().map(|f| clean_field(f).unwrap_or("".to_string())).collect();
-        w.write(rec.iter()).unwrap();
+        let rec = rec.iter().map(|f| clean_field(f).unwrap_or("".to_string()));
+        w.write(rec).unwrap();
     }
 }
 
@@ -31,7 +31,7 @@ pub fn handle_lines(r: &mut csv::Reader<std::io::Stdin>, w: &mut csv::Writer<std
 pub fn clean_field(s: &str) -> Result<String> {
     let s = try!(remove_quotes(&s));
     let s = try!(replace_linebreaks(&s));
-    let s = try!(trim_right(&s));
+    let s = s.trim().to_string();
     Ok(s)
 }
 
@@ -69,17 +69,9 @@ fn test_replace_linebreaks() {
     assert_eq!(replace_linebreaks(&s).unwrap(), "POSTBOKS 565,  ,  , TEST");
 }
 
-/// Removes trailing whitespace (including linebreaks and tabs) for a field.
-fn trim_right(s: &str) -> Result<String> {
-    lazy_static! {
-        static ref RE: Regex = Regex::new("[:space:]+$").unwrap();
-    }
-    Ok(RE.replace_all(s, ""))
-}
-
 #[test]
 fn test_trim_right() {
     let s = "POSTBOKS 565,   \n";
-    assert_eq!(trim_right(&s).unwrap(), "POSTBOKS 565,");
+    assert_eq!(s.trim_right(), "POSTBOKS 565,");
 }
 
