@@ -9,7 +9,7 @@ cat ./examples/data/sample.txt |\
     mapper |\
     reducer
 ```
-## Test
+## Example data
 
 ```bash
 cat ./examples/data/sample.txt |\
@@ -17,8 +17,12 @@ cat ./examples/data/sample.txt |\
     ./target/release/reducer
 ```
 
+## Throughput
+
 ```bash
-yes | ./target/release/mapper | pv > /dev/null
-yes | ./target/release/reducer  | pv > /dev/null
+yes |\
+  ./target/release/mapper |\
+  ./target/release/reducer |\
+  pv > /dev/null
 ```
 

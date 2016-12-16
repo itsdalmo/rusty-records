@@ -12,7 +12,7 @@ pub type Result<T> = result::Result<T, error::Error>;
 
 /// Pass lines from stdin to stdout
 pub fn pass(r: &mut csv::Reader<std::io::Stdin>, w: &mut csv::Writer<std::io::Stdout>) {
-    for record in r.records() {
+    for record in r.byte_records() {
         let rec = record.unwrap();
         w.write(rec.iter()).unwrap();
     }
