@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 #[macro_use]
 extern crate lazy_static;
 extern crate csv;
@@ -13,24 +12,26 @@ pub type Result<T> = result::Result<T, error::Error>;
 /// Pass lines from stdin to stdout
 pub fn pass(r: &mut csv::Reader<std::io::Stdin>, w: &mut csv::Writer<std::io::Stdout>) {
     for record in r.byte_records() {
-        let rec = record.unwrap();
-        w.write(rec.iter()).unwrap();
+        if let Ok(rec) = record {
+            let _ = w.write(rec.iter());
+        }
     }
 }
 
 /// Handle lines from stdin and writes to stdout. Cleans up fields in all records.
 pub fn handle_lines(r: &mut csv::Reader<std::io::Stdin>, w: &mut csv::Writer<std::io::Stdout>) {
     for record in r.records() {
-        let rec = record.unwrap();
-        let rec = rec.iter().map(|f| clean_field(f).unwrap_or("".to_string()));
-        w.write(rec).unwrap();
+        if let Ok(rec) = record {
+            let rec = rec.iter().map(|f| clean_field(f).unwrap_or("".to_string()));
+            let _ = w.write(rec);
+        }
     }
 }
 
 /// Cleans a single field of quotes, linebreaks and trailing whitespace.
 pub fn clean_field(s: &str) -> Result<String> {
-    let s = try!(remove_quotes(&s));
-    let s = try!(replace_linebreaks(&s));
+    let s = remove_quotes(&s)?;
+    let s = replace_linebreaks(&s)?;
     let s = s.trim().to_string();
     Ok(s)
 }
