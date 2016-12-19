@@ -9,6 +9,12 @@ cat ./examples/data/sample.txt |\
     mapper |\
     reducer
 ```
+
+You can also specify input and output filenames (defaults to stdin/out):
+```bash
+mapper --input ./examples/data/sample.txt | reducer --output test.txt
+```
+
 ## Example data
 
 ```bash
