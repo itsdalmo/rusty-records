@@ -2,8 +2,10 @@
 extern crate lazy_static;
 extern crate csv;
 extern crate regex;
+extern crate rayon;
 pub mod error;
 
+use rayon::prelude::*;
 use regex::Regex;
 use std::result;
 
@@ -11,21 +13,21 @@ pub type Result<T> = result::Result<T, error::Error>;
 
 /// Pass lines from stdin to stdout
 pub fn pass(r: &mut csv::Reader<Box<std::io::Read>>, w: &mut csv::Writer<Box<std::io::Write>>) {
-    for record in r.byte_records() {
+    r.byte_records().par_iter(|record| {
         if let Ok(rec) = record {
             let _ = w.write(rec.iter());
         }
-    }
+    });
 }
 
 /// Handle lines from stdin and writes to stdout. Cleans up fields in all records.
 pub fn handle_lines(r: &mut csv::Reader<Box<std::io::Read>>, w: &mut csv::Writer<Box<std::io::Write>>) {
-    for record in r.records() {
+    r.records().par_iter(|record| {
         if let Ok(rec) = record {
             let rec = rec.iter().map(|f| clean_field(f).unwrap_or("".to_string()));
             let _ = w.write(rec);
         }
-    }
+    });
 }
 
 /// Cleans a single field of quotes, linebreaks and trailing whitespace.
