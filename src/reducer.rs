@@ -24,12 +24,12 @@ fn main() {
         .about("http://github.com/itsdalmo/rusty-records")
         .get_matches();
 
-    let input: Box<std::io::Read> = match matches.value_of("input") {
+    let mut input: Box<std::io::Read> = match matches.value_of("input") {
         Some(v) => Box::new(std::fs::File::open(v).expect("Failed to open input.")),
         None    => Box::new(std::io::stdin()),
     };
 
-    let output: Box<std::io::Write> = match matches.value_of("output") {
+    let mut output: Box<std::io::Write> = match matches.value_of("output") {
         Some(v) => Box::new(std::fs::OpenOptions::new()
                             .create(true).write(true)
                             .open(v)
@@ -37,7 +37,5 @@ fn main() {
         None    => Box::new(std::io::stdout()),
     };
 
-    let mut rdr = csv::Reader::from_reader(input).has_headers(false).delimiter(b'|').flexible(true);
-    let mut wrt = csv::Writer::from_writer(output).delimiter(b'|').flexible(true);
-    rusty_records::pass(&mut rdr, &mut wrt);
+    std::io::copy(&mut input, &mut output);
 }

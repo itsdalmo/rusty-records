@@ -9,15 +9,6 @@ use std::result;
 
 pub type Result<T> = result::Result<T, error::Error>;
 
-/// Pass lines from stdin to stdout
-pub fn pass(r: &mut csv::Reader<Box<std::io::Read>>, w: &mut csv::Writer<Box<std::io::Write>>) {
-    for record in r.byte_records() {
-        if let Ok(rec) = record {
-            let _ = w.write(rec.iter());
-        }
-    }
-}
-
 /// Handle lines from stdin and writes to stdout. Cleans up fields in all records.
 pub fn handle_lines(r: &mut csv::Reader<Box<std::io::Read>>, w: &mut csv::Writer<Box<std::io::Write>>) {
     for record in r.records() {
