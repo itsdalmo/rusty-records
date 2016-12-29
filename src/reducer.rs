@@ -37,5 +37,5 @@ fn main() {
         None    => Box::new(std::io::stdout()),
     };
 
-    std::io::copy(&mut input, &mut output);
+    let _ = std::io::copy(&mut input, &mut output);
 }
