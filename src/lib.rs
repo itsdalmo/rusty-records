@@ -10,7 +10,9 @@ use std::result;
 pub type Result<T> = result::Result<T, error::Error>;
 
 /// Handle lines from stdin and writes to stdout. Cleans up fields in all records.
-pub fn handle_lines(r: &mut csv::Reader<Box<std::io::Read>>, w: &mut csv::Writer<Box<std::io::Write>>) {
+pub fn handle_lines<R, W>(r: &mut csv::Reader<R>, w: &mut csv::Writer<W>)
+    where R: std::io::Read,
+          W: std::io::Write {
     for record in r.records() {
         if let Ok(rec) = record {
             let rec = rec.iter().map(|f| clean_field(f).unwrap_or("".to_string()));
