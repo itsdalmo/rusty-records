@@ -24,14 +24,16 @@ pub fn handle_lines<R, W>(r: &mut csv::Reader<R>, w: &mut csv::Writer<W>)
 /// Cleans a single field of quotes, linebreaks and trailing whitespace.
 pub fn clean_field(s: &str) -> Result<String> {
     let s = remove_quotes(&s)?;
+    let s = remove_pipes(&s)?;
     let s = replace_linebreaks(&s)?;
-    let s = s.trim().to_string();
+    let m: &[_] = &[',', ' ']; // Trim colons and spaces
+    let s = s.trim_matches(m).to_string();
     Ok(s)
 }
 
 #[test]
 fn test_clean_field() {
-    let s = "POSTBOKS 565,\n\"OBS!!!!\"  ";
+    let s = "POSTBOKS 565,\n\"OBS!!!!\",,  ";
     assert_eq!(clean_field(&s).unwrap(), "POSTBOKS 565, OBS!!!!");
 }
 
@@ -47,6 +49,20 @@ fn remove_quotes(s: &str) -> Result<String> {
 fn test_remove_quotes() {
     let s = "POSTBOKS 565, OBS!!! PRIVAT/PERSONLIG\"\"";
     assert_eq!(remove_quotes(&s).unwrap(), "POSTBOKS 565, OBS!!! PRIVAT/PERSONLIG");
+}
+
+/// Removes pipe characters from a record.
+fn remove_pipes(s: &str) -> Result<String> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"[\|]+").unwrap();
+    }
+    Ok(RE.replace_all(s, ""))
+}
+
+#[test]
+fn test_remove_pipes() {
+    let s = "POSTBOKS 565, OBS|| PRIVAT/PERSONLIG";
+    assert_eq!(remove_pipes(&s).unwrap(), "POSTBOKS 565, OBS PRIVAT/PERSONLIG");
 }
 
 /// Replaces one or more linebreaks in a field with a single space.
